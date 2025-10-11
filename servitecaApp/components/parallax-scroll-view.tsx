@@ -24,22 +24,28 @@ export default function ParallaxScrollView({
   headerBackgroundColor,
 }: Props) {
   const backgroundColor = useThemeColor({}, 'background');
-  const colorScheme = useColorScheme() ?? 'light';
+  const colorScheme = (useColorScheme() ?? 'light') as 'light' | 'dark';
   const scrollRef = useAnimatedRef<Animated.ScrollView>();
   const scrollOffset = useScrollOffset(scrollRef);
-  const headerAnimatedStyle = useAnimatedStyle(() => {
+
+  // <-- TIPADO EXPLÍCITO: AnimatedStyle<ViewStyle>
+  const headerAnimatedStyle = useAnimatedStyle((): any => {
+    const translateY = interpolate(
+      scrollOffset.value,
+      [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
+      [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75]
+    );
+
+    const scale = interpolate(
+      scrollOffset.value,
+      [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
+      [2, 1, 1]
+    );
+
     return {
       transform: [
-        {
-          translateY: interpolate(
-            scrollOffset.value,
-            [-HEADER_HEIGHT, 0, HEADER_HEIGHT],
-            [-HEADER_HEIGHT / 2, 0, HEADER_HEIGHT * 0.75]
-          ),
-        },
-        {
-          scale: interpolate(scrollOffset.value, [-HEADER_HEIGHT, 0, HEADER_HEIGHT], [2, 1, 1]),
-        },
+        { translateY },
+        { scale },
       ],
     };
   });
@@ -52,6 +58,7 @@ export default function ParallaxScrollView({
       <Animated.View
         style={[
           styles.header,
+          // aseguramos que TS sabe que colorScheme es 'light' | 'dark'
           { backgroundColor: headerBackgroundColor[colorScheme] },
           headerAnimatedStyle,
         ]}>
