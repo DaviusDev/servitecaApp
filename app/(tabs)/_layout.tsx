@@ -36,6 +36,16 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      <Tabs.Screen
+        name="servicios"
+        options={{
+          title: "Servicios",
+          tabBarIcon: ({ color }) => (
+            <AntDesign name="tool" size={24} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
