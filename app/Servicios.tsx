@@ -1,7 +1,17 @@
+import { useRouter } from "expo-router";
 import React from "react";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function ServiciosScreen() {
+  const router = useRouter(); 
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.titulo}>Nuestros Servicios</Text>
@@ -11,7 +21,10 @@ export default function ServiciosScreen() {
 
       {/* Servicio 1 */}
       <View style={styles.card}>
-        <Image source={require("@/assets/images/mecanica.png")} style={styles.icono} />
+        <Image
+          source={require("@/assets/images/mecanica.png")}
+          style={styles.icono}
+        />
         <View style={styles.textContainer}>
           <Text style={styles.nombre}>Mecánica General</Text>
           <TouchableOpacity style={styles.boton}>
@@ -22,7 +35,10 @@ export default function ServiciosScreen() {
 
       {/* Servicio 2 */}
       <View style={styles.card}>
-        <Image source={require("@/assets/images/aceite.png")} style={styles.icono} />
+        <Image
+          source={require("@/assets/images/aceite.png")}
+          style={styles.icono}
+        />
         <View style={styles.textContainer}>
           <Text style={styles.nombre}>Cambio de Aceite</Text>
           <TouchableOpacity style={styles.boton}>
@@ -33,13 +49,26 @@ export default function ServiciosScreen() {
 
       {/* Servicio 3 */}
       <View style={styles.card}>
-        <Image source={require("@/assets/images/alineacion.png")} style={styles.icono} />
+        <Image
+          source={require("@/assets/images/alineacion.png")}
+          style={styles.icono}
+        />
         <View style={styles.textContainer}>
           <Text style={styles.nombre}>Alineación / Balanceo</Text>
           <TouchableOpacity style={styles.boton}>
             <Text style={styles.textoBoton}>Solicitar Servicio</Text>
           </TouchableOpacity>
         </View>
+      </View>
+
+      {/* 🔙 Botón para volver al menú principal */}
+      <View style={{ alignItems: "center", marginTop: 30 }}>
+        <TouchableOpacity
+          onPress={() => router.push("/")} 
+          style={styles.botonVolver}
+        >
+          <Text style={styles.textoVolver}>Volver al menú principal</Text>
+        </TouchableOpacity>
       </View>
     </ScrollView>
   );
@@ -103,5 +132,17 @@ const styles = StyleSheet.create({
   textoBoton: {
     color: "#fff",
     fontWeight: "bold",
+  },
+  botonVolver: {
+    backgroundColor: "#1a1a9e",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginBottom: 30,
+  },
+  textoVolver: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
