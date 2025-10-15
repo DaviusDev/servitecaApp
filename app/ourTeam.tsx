@@ -1,7 +1,7 @@
 import { Image } from "expo-image";
+import { useRouter } from "expo-router";
 import React from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
-
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const teamMembers = [
@@ -32,10 +32,13 @@ const teamMembers = [
 ];
 
 export default function OurTeam() {
+  const router = useRouter(); // 👈 inicializa el router
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.title}>Nuestro Equipo</Text>
+
         {teamMembers.map((member, idx) => (
           <View key={idx} style={styles.card}>
             <Image source={member.image} style={styles.image} />
@@ -44,6 +47,16 @@ export default function OurTeam() {
             <Text style={styles.description}>{member.description}</Text>
           </View>
         ))}
+
+        {/* 🔙 Botón para volver al menú principal */}
+        <View style={{ alignItems: "center", marginTop: 20 }}>
+          <TouchableOpacity
+            onPress={() => router.push("/")}
+            style={styles.botonVolver}
+          >
+            <Text style={styles.textoVolver}>Volver al menú principal</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -91,5 +104,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#636e72",
     textAlign: "center",
+  },
+  botonVolver: {
+    backgroundColor: "#1a1a9e",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 25,
+    marginBottom: 30,
+  },
+  textoVolver: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
