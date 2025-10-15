@@ -1,6 +1,6 @@
+import { useRouter } from "expo-router";
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
-import { useRouter, Link } from "expo-router";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function home() {
   const router = useRouter();
@@ -13,28 +13,40 @@ export default function home() {
         style={styles.carImage}
       />
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push({ pathname: "/Servicios" } as any)}
+      >
         <Text style={styles.buttonText}>Servicios</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push({ pathname: "/ourTeam" } as any)}
+      >
         <Text style={styles.buttonText}>Técnicos</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push({ pathname: "/trabajos" } as any)}
+      >
         <Text style={styles.buttonText}>Trabajos</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
-      style={styles.button}
-      onPress={() => router.push({ pathname: "/contacto" } as any)}
-    >
-      <Text style={styles.buttonText}>Contacto</Text>
-    </TouchableOpacity>
+        style={styles.button}
+        onPress={() => router.push({ pathname: "/contacto" } as any)}
+      >
+        <Text style={styles.buttonText}>Contacto</Text>
+      </TouchableOpacity>
 
-    <TouchableOpacity style={styles.button} onPress={() => router.push({ pathname: "/encuentranos" } as any)}>
-      <Text style={styles.buttonText}>Encuéntranos</Text>
-    </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => router.push({ pathname: "/encuentranos" } as any)}
+      >
+        <Text style={styles.buttonText}>Encuéntranos</Text>
+      </TouchableOpacity>
     </View>
   );
 }
