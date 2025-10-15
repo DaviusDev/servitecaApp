@@ -8,25 +8,25 @@ const teamMembers = [
   {
     name: "Juan Pérez",
     role: "Mecánico Principal",
-    image: require("../../assets/images/juan.jpg"),
+    image: require("../assets/images/juan.jpg"),
     description: "Especialista en reparación de motores y sistemas eléctricos.",
   },
   {
     name: "María Gómez",
     role: "Gerente de Servicio",
-    image: require("../../assets/images/maria.jpg"),
+    image: require("../assets/images/maria.jpg"),
     description: "Encargada de la atención al cliente y gestión de servicios.",
   },
   {
     name: "Carlos Ramírez",
     role: "Técnico en Diagnóstico",
-    image: require("../../assets/images/carlos.png"),
+    image: require("../assets/images/carlos.png"),
     description: "Experto en diagnóstico computarizado de vehículos.",
   },
   {
     name: "Ana Torres",
     role: "Especialista en Neumáticos",
-    image: require("../../assets/images/ana.jpg"),
+    image: require("../assets/images/ana.jpg"),
     description: "Responsable del mantenimiento y cambio de llantas.",
   },
 ];
