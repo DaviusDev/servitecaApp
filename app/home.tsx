@@ -1,7 +1,9 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { useRouter, Link } from "expo-router";
 
 export default function home() {
+  const router = useRouter();
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Full Autos SAS</Text>
@@ -23,9 +25,16 @@ export default function home() {
         <Text style={styles.buttonText}>Trabajos</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.button}>
-        <Text style={styles.buttonText}>Contacto</Text>
-      </TouchableOpacity>
+      <TouchableOpacity
+      style={styles.button}
+      onPress={() => router.push({ pathname: "/contacto" } as any)}
+    >
+      <Text style={styles.buttonText}>Contacto</Text>
+    </TouchableOpacity>
+
+    <TouchableOpacity style={styles.button} onPress={() => router.push({ pathname: "/encuentranos" } as any)}>
+      <Text style={styles.buttonText}>Encuéntranos</Text>
+    </TouchableOpacity>
     </View>
   );
 }
