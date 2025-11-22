@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import {
   Alert,
@@ -9,11 +9,14 @@ import {
   View,
 } from "react-native";
 
-const PHONE = "3215"; // <-- reemplaza si es necesario
-const EMAIL = "serviteca@"; // <-- pon el correo real (ej: "serviteca@empresa.com")
+const PHONE = "3215"; // reemplaza si es necesario
+const EMAIL = "serviteca@"; // pon el correo real, ej: "serviteca@empresa.com"
 
 export default function Contacto() {
-  const router = useRouter(); // 👈 inicializa el router
+  const router = useRouter();
+
+  // 👇 Recibimos el servicio que viene desde la pantalla de Servicios
+  const { servicio } = useLocalSearchParams();
 
   const handleCall = async () => {
     const url = `tel:${PHONE}`;
@@ -33,6 +36,16 @@ export default function Contacto() {
     <View style={styles.container}>
       <Text style={styles.title}>Contacto</Text>
 
+      {/* 👇 Caja que muestra qué servicio está solicitando el usuario */}
+      {servicio && (
+        <View style={styles.servicioBox}>
+          <Text style={styles.servicioText}>
+            Estás solicitando:{" "}
+            <Text style={styles.servicioBold}>{servicio}</Text>
+          </Text>
+        </View>
+      )}
+
       <View style={styles.card}>
         <Text style={styles.label}>Llámanos</Text>
         <Text style={styles.value}>{PHONE}</Text>
@@ -49,8 +62,19 @@ export default function Contacto() {
         </TouchableOpacity>
       </View>
 
-      {/* 🔙 Botón para volver al menú principal */}
+      {/* 🔁 Volver a Servicios */}
       <View style={{ alignItems: "center", marginTop: 20 }}>
+        <TouchableOpacity
+          // Ojo: asumo que tu archivo es app/(tabs)/servicios.tsx
+          onPress={() => router.push("/Servicios")}
+          style={styles.botonVolver}
+        >
+          <Text style={styles.textoVolver}>Volver a Servicios</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* 🔙 Volver al menú principal */}
+      <View style={{ alignItems: "center", marginTop: 10 }}>
         <TouchableOpacity
           onPress={() => router.push("/")}
           style={styles.botonVolver}
@@ -75,6 +99,20 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
     textAlign: "center",
+  },
+  servicioBox: {
+    backgroundColor: "#fff",
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 20,
+  },
+  servicioText: {
+    fontSize: 16,
+    color: "#111",
+  },
+  servicioBold: {
+    fontWeight: "bold",
+    color: "#0000A0",
   },
   card: {
     backgroundColor: "#fff",
@@ -102,7 +140,6 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 30,
     borderRadius: 25,
-    marginTop: 10,
   },
   textoVolver: {
     color: "#fff",
