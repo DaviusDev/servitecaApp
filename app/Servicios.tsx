@@ -1,3 +1,4 @@
+
 import { useRouter } from "expo-router";
 import React from "react";
 import {
@@ -9,8 +10,30 @@ import {
   View,
 } from "react-native";
 
+const servicios = [
+  {
+    id: "mecanica",
+    titulo: "Mecánica General",
+    imagen: require("@/assets/images/mecanica.png"),
+  },
+  {
+    id: "aceite",
+    titulo: "Cambio de Aceite",
+    imagen: require("@/assets/images/aceite.png"),
+  },
+  {
+    id: "alineacion",
+    titulo: "Alineación / Balanceo",
+    imagen: require("@/assets/images/alineacion.png"),
+  },
+];
+
 export default function ServiciosScreen() {
-  const router = useRouter(); 
+  const router = useRouter();
+
+  const volverAlMenu = () => {
+    router.push("/");
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -19,54 +42,26 @@ export default function ServiciosScreen() {
         Solicita el servicio que tu vehículo necesita con un clic
       </Text>
 
-      {/* Servicio 1 */}
-      <View style={styles.card}>
-        <Image
-          source={require("@/assets/images/mecanica.png")}
-          style={styles.icono}
-        />
-        <View style={styles.textContainer}>
-          <Text style={styles.nombre}>Mecánica General</Text>
-          <TouchableOpacity style={styles.boton}>
-            <Text style={styles.textoBoton}>Solicitar Servicio</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+      {servicios.map((item) => (
+        <View key={item.id} style={styles.card}>
+          <Image source={item.imagen} style={styles.icono} />
 
-      {/* Servicio 2 */}
-      <View style={styles.card}>
-        <Image
-          source={require("@/assets/images/aceite.png")}
-          style={styles.icono}
-        />
-        <View style={styles.textContainer}>
-          <Text style={styles.nombre}>Cambio de Aceite</Text>
-          <TouchableOpacity style={styles.boton}>
-            <Text style={styles.textoBoton}>Solicitar Servicio</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+          <View style={styles.textContainer}>
+            <Text style={styles.nombre}>{item.titulo}</Text>
 
-      {/* Servicio 3 */}
-      <View style={styles.card}>
-        <Image
-          source={require("@/assets/images/alineacion.png")}
-          style={styles.icono}
-        />
-        <View style={styles.textContainer}>
-          <Text style={styles.nombre}>Alineación / Balanceo</Text>
-          <TouchableOpacity style={styles.boton}>
-            <Text style={styles.textoBoton}>Solicitar Servicio</Text>
+          <TouchableOpacity
+           style={styles.boton}
+           onPress={() => router.push(`/contacto?servicio=${item.titulo}`)}
+          > 
+           <Text style={styles.textoBoton}>Solicitar Servicio</Text>
           </TouchableOpacity>
-        </View>
-      </View>
 
-      {/* 🔙 Botón para volver al menú principal */}
+          </View>
+        </View>
+      ))}
+
       <View style={{ alignItems: "center", marginTop: 30 }}>
-        <TouchableOpacity
-          onPress={() => router.push("/")} 
-          style={styles.botonVolver}
-        >
+        <TouchableOpacity onPress={volverAlMenu} style={styles.botonVolver}>
           <Text style={styles.textoVolver}>Volver al menú principal</Text>
         </TouchableOpacity>
       </View>
@@ -143,6 +138,6 @@ const styles = StyleSheet.create({
   textoVolver: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 16,
-  },
+    fontSize: 16,
+  },
 });

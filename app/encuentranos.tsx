@@ -1,9 +1,11 @@
+import { Ionicons } from "@expo/vector-icons";
 import * as Linking from "expo-linking";
 import * as Location from "expo-location";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Alert,
+  Animated,
   Platform,
   StyleSheet,
   Text,
@@ -26,9 +28,16 @@ export default function Encuentranos() {
     longitude: number;
   } | null>(null);
 
-  const router = useRouter(); // 👈 inicializa el router
+  const [showOverlay, setShowOverlay] = useState(true); // 👈 nuevo estado
+
+  const router = useRouter();
+
+  // Animaciones de entrada
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(20)).current;
 
   useEffect(() => {
+    // Permiso de ubicación
     (async () => {
       const { status } = await Location.requestForegroundPermissionsAsync();
       setHasPerm(status === "granted");
@@ -41,6 +50,22 @@ export default function Encuentranos() {
       });
     })();
   }, []);
+
+  useEffect(() => {
+    // Animación de entrada
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 600,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [fadeAnim, translateY]);
 
   const openRoute = () => {
     const dest = encodeURIComponent(DEST_QUERY);
@@ -60,97 +85,263 @@ export default function Encuentranos() {
     }
 
     Linking.openURL(url).catch(() =>
-      Alert.alert("No se pudo abrir Google Maps.")
+      Alert.alert("No se pudo abrir la aplicación de mapas.")
     );
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Encuéntranos</Text>
-      <Text style={styles.subtitle}>Colombia · Bogotá · Calle 40 #2-15</Text>
-
-      <MapView
-        style={styles.map}
-        provider={PROVIDER_GOOGLE}
-        initialRegion={{
-          latitude: DEST_LAT,
-          longitude: DEST_LNG,
-          latitudeDelta: 0.05,
-          longitudeDelta: 0.05,
-        }}
-        showsUserLocation={hasPerm === true}
+      {/* Header */}
+      <Animated.View
+        style={[
+          styles.headerContainer,
+          { opacity: fadeAnim, transform: [{ translateY }] },
+        ]}
       >
-        <Marker
-          coordinate={{ latitude: DEST_LAT, longitude: DEST_LNG }}
-          title="Serviteca"
-          description="Calle 40 #2-15, Bogotá"
-        />
-      </MapView>
-
-      <TouchableOpacity style={styles.button} onPress={openRoute}>
-        <Text style={styles.buttonText}>Ver ruta en Google Maps</Text>
-      </TouchableOpacity>
-
-      {/* 🔙 Botón para volver al menú principal */}
-      <View style={{ alignItems: "center", marginBottom: 20 }}>
-        <TouchableOpacity
-          onPress={() => router.push("/")}
-          style={styles.botonVolver}
-        >
-          <Text style={styles.textoVolver}>Volver al menú principal</Text>
-        </TouchableOpacity>
-      </View>
-
-      {hasPerm === false && (
-        <Text style={styles.permissionNote}>
-          Para mostrar tu ubicación y calcular la ruta, otorga el permiso de
-          ubicación desde los ajustes del dispositivo.
+        <Text style={styles.appName}>FULL AUTOS SAS</Text>
+        <Text style={styles.title}>Encuéntranos</Text>
+        <Text style={styles.subtitle}>
+          Colombia · Bogotá · Calle 40 #2-15{"\n"}
+          Localiza nuestra sede y llega con ruta guiada en tu app de mapas.
         </Text>
-      )}
+      </Animated.View>
+
+      {/* Mapa con tarjeta flotante */}
+      <Animated.View
+        style={[
+          styles.mapWrapper,
+          { opacity: fadeAnim, transform: [{ translateY }] },
+        ]}
+      >
+        <MapView
+          style={styles.map}
+          provider={PROVIDER_GOOGLE}
+          initialRegion={{
+            latitude: DEST_LAT,
+            longitude: DEST_LNG,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05,
+          }}
+          showsUserLocation={hasPerm === true}
+        >
+          <Marker
+            coordinate={{ latitude: DEST_LAT, longitude: DEST_LNG }}
+            title="Serviteca Full Autos"
+            description="Calle 40 #2-15, Bogotá"
+          />
+        </MapView>
+
+        {/* 🔘 Botón para mostrar/ocultar el mensaje */}
+        <TouchableOpacity
+          style={styles.locationToggle}
+          onPress={() => setShowOverlay((prev) => !prev)}
+        >
+          <Ionicons
+            name={showOverlay ? "location" : "location-outline"}
+            size={20}
+            color="#FFFFFF"
+          />
+        </TouchableOpacity>
+
+        {/* 📝 Tarjeta con el mensaje encima del mapa (toggle) */}
+        {showOverlay && (
+          <View style={styles.mapOverlayCard}>
+            <View style={styles.mapOverlayRow}>
+              <Text style={styles.mapOverlayTitle}>Sede principal</Text>
+              <Text style={styles.mapOverlayText}>
+                Calle 40 #2-15, Bogotá, Colombia. Punto de atención para
+                revisiones, diagnósticos y asesoría técnica.
+              </Text>
+            </View>
+            <Text style={styles.mapOverlayHint}>
+              Usa el botón inferior para abrir la ruta paso a paso en tu
+              aplicación de mapas preferida.
+            </Text>
+          </View>
+        )}
+      </Animated.View>
+
+      {/* Acciones y botón volver */}
+      <Animated.View
+        style={[
+          styles.actionsContainer,
+          { opacity: fadeAnim, transform: [{ translateY }] },
+        ]}
+      >
+        <TouchableOpacity style={styles.buttonPrimary} onPress={openRoute}>
+          <Ionicons name="navigate-outline" size={18} color="#FFFFFF" />
+          <Text style={styles.buttonPrimaryText}>Ver ruta en Google Maps</Text>
+        </TouchableOpacity>
+
+        {hasPerm === false && (
+          <View style={styles.permissionBox}>
+            <Ionicons name="warning-outline" size={18} color="#F5C35E" />
+            <Text style={styles.permissionNote}>
+              Para calcular la ruta desde tu ubicación actual, habilita el
+              permiso de ubicación de la app en los ajustes del dispositivo.{"\n"}
+              Aun sin permiso, podrás ver la ruta tomando la serviteca como
+              destino.
+            </Text>
+          </View>
+        )}
+
+        <View style={styles.backContainer}>
+          <TouchableOpacity
+            onPress={() => router.push("/")}
+            style={styles.botonVolver}
+          >
+            <Ionicons name="arrow-back-outline" size={18} color="#FFFFFF" />
+            <Text style={styles.textoVolver}>Volver al menú principal</Text>
+          </TouchableOpacity>
+        </View>
+      </Animated.View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0000A0", paddingTop: 50 },
+  container: {
+    flex: 1,
+    backgroundColor: "#050B29",
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  headerContainer: {
+    marginBottom: 20,
+  },
+  appName: {
+    fontSize: 12,
+    color: "#8EA4FF",
+    letterSpacing: 2,
+    textAlign: "center",
+    textTransform: "uppercase",
+    marginBottom: 4,
+  },
   title: {
     fontSize: 26,
-    color: "#fff",
+    color: "#FFFFFF",
     fontWeight: "bold",
     textAlign: "center",
   },
   subtitle: {
     fontSize: 14,
-    color: "#fff",
-    opacity: 0.9,
+    color: "#D0D4FF",
     textAlign: "center",
-    marginBottom: 10,
+    marginTop: 8,
+    lineHeight: 20,
   },
-  map: { flex: 1, margin: 16, borderRadius: 12, overflow: "hidden" },
-  button: {
-    backgroundColor: "#fff",
-    marginHorizontal: 16,
-    marginBottom: 10,
-    paddingVertical: 12,
-    borderRadius: 10,
+  mapWrapper: {
+    borderRadius: 18,
+    overflow: "hidden",
+    backgroundColor: "#000000",
+    height: 260,
+    marginBottom: 18,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  map: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
+  // 🔘 Botón flotante de ubicación (toggle)
+  locationToggle: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 999,
+    backgroundColor: "rgba(32,51,163,0.95)",
     alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "rgba(142,164,255,0.6)",
   },
-  buttonText: { color: "#0000A0", fontWeight: "bold" },
+  mapOverlayCard: {
+    position: "absolute",
+    bottom: 14,
+    left: 14,
+    right: 14,
+    backgroundColor: "rgba(5,11,41,0.95)",
+    borderRadius: 16,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "rgba(142,164,255,0.4)",
+  },
+  mapOverlayRow: {
+    marginBottom: 8,
+  },
+  mapOverlayTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#FFFFFF",
+    marginBottom: 2,
+  },
+  mapOverlayText: {
+    fontSize: 12,
+    color: "#C6CEFF",
+    lineHeight: 18,
+  },
+  mapOverlayHint: {
+    fontSize: 11,
+    color: "#8EA4FF",
+    marginTop: 2,
+  },
+  actionsContainer: {
+    marginTop: 4,
+  },
+  buttonPrimary: {
+    backgroundColor: "#2033A3",
+    paddingVertical: 12,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+  },
+  buttonPrimaryText: {
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: 14,
+    marginLeft: 8,
+  },
+  permissionBox: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    backgroundColor: "rgba(112,81,21,0.35)",
+    borderRadius: 12,
+    padding: 10,
+    marginTop: 10,
+  },
   permissionNote: {
-    color: "#fff",
-    textAlign: "center",
-    marginBottom: 12,
-    paddingHorizontal: 16,
+    flex: 1,
+    color: "#FFE6A3",
+    fontSize: 12,
+    marginLeft: 8,
+    lineHeight: 18,
+  },
+  backContainer: {
+    alignItems: "center",
+    marginTop: 18,
   },
   botonVolver: {
-    backgroundColor: "#1a1a9e",
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 25,
+    backgroundColor: "#141F8B",
+    paddingVertical: 11,
+    paddingHorizontal: 28,
+    borderRadius: 30,
+    flexDirection: "row",
+    alignItems: "center",
   },
   textoVolver: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
+    color: "#FFFFFF",
+    fontWeight: "700",
+    fontSize: 14,
+    marginLeft: 8,
   },
 });
